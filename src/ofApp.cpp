@@ -3,10 +3,13 @@
 //--------------------------------------------------------------
 void ofApp::setup() {
 
+    ofSetFrameRate(60);
 	screenW = ofGetScreenWidth();
 	indexW = float(screenW) / float(1920);
-
-	ofSetWindowShape(ofGetWidth(), 807*indexW);
+    
+	ofSetWindowShape(ofGetWidth(), 807 * indexW);
+    
+    saveResRatio = 3;
 
 	// FONDO
 	panel.load("imgFondo/panelFinal.png");
@@ -20,18 +23,18 @@ void ofApp::setup() {
 	//imgTest_2.load("imgTest/question_2.png");
 
 	// Fonts
-	ofTrueTypeFont::setGlobalDpi(72);
+    ofxTrueTypeFontUC::setGlobalDpi(100);
 	// question.load("fonts/UniversLTStd-BoldCn.otf", 14, true, false);
-	question.load("fonts/UniversLTStd-BoldCn.otf", 13, true, false);
-	question.setSpaceSize(0.7f);
-	answer.load("fonts/UniversLTStd-LightCn.otf", 11, true, false);
-	answer.setSpaceSize(0.7f);
-	questionGUI.load("fonts/UniversLTStd-BoldCn.otf", int(13*indexW), true, false);
-	questionGUI.setSpaceSize(0.7f*indexW);
-	answerGUI.load("fonts/UniversLTStd-LightCn.otf", int(11*indexW), true, false);
-	answerGUI.setSpaceSize(0.7f*indexW);
+	question.load("fonts/UniversLTStd-BoldCn.otf", 13*saveResRatio, true);
+	question.setSpaceSize(0.6f);
+	answer.load("fonts/UniversLTStd-BoldCn.otf", 12*saveResRatio, true);
+	answer.setSpaceSize(0.6f);
+	questionGUI.load("fonts/UniversLTStd-BoldCn.otf", int(13*indexW), true);
+    questionGUI.setSpaceSize(0.6f*indexW);
+	answerGUI.load("fonts/UniversLTStd-BoldCn.otf", int(12*indexW), true);
+	answerGUI.setSpaceSize(0.6f*indexW);
 	gui.load("fonts/UniversLTStd-LightCn.otf", 16, true, false);
-	gui.setSpaceSize(0.7f*indexW);
+	gui.setSpaceSize(0.6f*indexW);
 
 	setupSaveButton();
 	setupPositions();
@@ -53,7 +56,9 @@ void ofApp::setup() {
 
 	editMode = true;
     
-    saveButtonCapado = true;
+    saveButtonCapado = false;
+    
+    isWindows = false;
 }
 
 void ofApp::setupStrings() {
@@ -181,8 +186,8 @@ void ofApp::draw() {
 			marginDraw = ofPoint(imgPosX_2, -25);
 			marginPost2[0] = ofPoint(20, -15);
 			marginPost2[1] = ofPoint(-30, -10);
-			marginPost2[2] = ofPoint(-30, 20);
-			marginPost2[3] = ofPoint(-30, 45);
+			marginPost2[2] = ofPoint(-30, 15);
+			marginPost2[3] = ofPoint(-30, 35);
 		}
 		else if (activePostazione == 2) {
 			marginDraw = ofPoint(imgPosX_3, 0);
@@ -196,17 +201,18 @@ void ofApp::draw() {
 		ofPushStyle();
 		ofSetColor(228, 52, 45, 255);
 		ofPoint drawPos;
-		float totalHeight = 0;
+        float totalHeight = 0;
 		for (int i = 0; i < nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			totalHeight += questionGUI.stringHeight(questionString[i][activePostazione][activeQuestion])*1.4;
+			totalHeight += questionGUI.stringHeight(questionString[i][activePostazione][activeQuestion])*1.3;
 		}
-		totalHeight *= 1.3;
 		for (int i = 0; i < nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			drawPos.x = marginDraw.x + marginW + squarePos.x + squareW / 2 - questionGUI.stringWidth(questionString[i][activePostazione][activeQuestion]) / 2 + marginPost2[0].x;
-			drawPos.y = marginDraw.y + marginH + squarePos.y + squareH / 2 - totalHeight / 3 + i*totalHeight / nStringActiveLines[activePostazione][activeQuestion] + marginPost2[0].y;
-			drawPos.x = drawPos.x*indexW;
-			drawPos.y = drawPos.y*indexW;
-			questionGUI.drawString(questionString[i][activePostazione][activeQuestion], drawPos.x, drawPos.y);
+			drawPos.x = (marginDraw.x + marginW + squarePos.x + squareW / 2)*indexW - questionGUI.stringWidth(questionString[i][activePostazione][activeQuestion]) / 2 + (marginPost2[0].x)*indexW;
+			drawPos.y = (marginDraw.y + marginH + squarePos.y + squareH / 2)*indexW - totalHeight / 3 + i*totalHeight / nStringActiveLines[activePostazione][activeQuestion] + marginPost2[0].y*indexW;
+			drawPos.x = drawPos.x;
+			drawPos.y = drawPos.y;
+            questionGUI.drawString(questionString[i][activePostazione][activeQuestion],
+                                   (int)drawPos.x,
+                                   (int)drawPos.y);
 		}
 		ofPopStyle();
 
@@ -216,41 +222,41 @@ void ofApp::draw() {
 		// - a
 		totalHeight = 0;
 		for (int i = 0; i < ansA_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			totalHeight += answerGUI.stringHeight(answerStringA[i][activePostazione][activeQuestion])*1.4;
+			totalHeight += answerGUI.stringHeight(answerStringA[i][activePostazione][activeQuestion])*1.2;
 		}
-		totalHeight *= 1.3;
 		drawPos.x = marginDraw.x + marginW + marginW_a + marginPost2[1].x;
 		drawPos.x = drawPos.x*indexW;
 		for (int i = 0; i < ansA_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			drawPos.y = marginDraw.y + marginH + marginH_a + 10 - totalHeight / 3 + i*totalHeight / ansA_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[1].y;
-			drawPos.y = drawPos.y*indexW;
-			answerGUI.drawString(answerStringA[i][activePostazione][activeQuestion], drawPos.x, drawPos.y);
+			drawPos.y = (marginDraw.y + marginH + marginH_a + 10)*indexW - totalHeight / 3 + i*totalHeight / ansA_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[1].y*indexW;
+			answerGUI.drawString(answerStringA[i][activePostazione][activeQuestion],
+                                 int(drawPos.x),
+                                 int(drawPos.y));
 		}
 		// - b
 		totalHeight = 0;
 		for (int i = 0; i < ansB_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			totalHeight += answerGUI.stringHeight(answerStringB[i][activePostazione][activeQuestion])*1.4;
+			totalHeight += answerGUI.stringHeight(answerStringB[i][activePostazione][activeQuestion])*1.2;
 		}
-		totalHeight *= 1.3;
 		drawPos.x = marginDraw.x + marginW + marginW_b + marginPost2[2].x;
 		drawPos.x = drawPos.x*indexW;
 		for (int i = 0; i < ansB_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			drawPos.y = marginDraw.y + marginH + marginH_b + 10 - totalHeight / 3 + i*totalHeight / ansB_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[2].y;
-			drawPos.y = drawPos.y*indexW;
-			answerGUI.drawString(answerStringB[i][activePostazione][activeQuestion], drawPos.x, drawPos.y);
+			drawPos.y = (marginDraw.y + marginH + marginH_b + 10)*indexW - totalHeight / 3 + i*totalHeight / ansB_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[2].y*indexW;
+			answerGUI.drawString(answerStringB[i][activePostazione][activeQuestion],
+                                 int(drawPos.x),
+                                 int(drawPos.y));
 		}
 		// - c
 		totalHeight = 0;
 		for (int i = 0; i < ansC_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			totalHeight += answerGUI.stringHeight(answerStringC[i][activePostazione][activeQuestion])*1.4;
+			totalHeight += answerGUI.stringHeight(answerStringC[i][activePostazione][activeQuestion])*1.2;
 		}
-		totalHeight *= 1.3;
 		drawPos.x = marginDraw.x + marginW + marginW_c + marginPost2[3].x;
 		drawPos.x = drawPos.x*indexW;
 		for (int i = 0; i < ansC_nStringActiveLines[activePostazione][activeQuestion]; i++) {
-			drawPos.y = marginDraw.y + marginH + marginH_c + 10 - totalHeight / 3 + i*totalHeight / ansC_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[3].y;
-			drawPos.y = drawPos.y*indexW;
-			answerGUI.drawString(answerStringC[i][activePostazione][activeQuestion], drawPos.x, drawPos.y);
+			drawPos.y = (marginDraw.y + marginH + marginH_c + 10)*indexW - totalHeight / 3 + i*totalHeight / ansC_nStringActiveLines[activePostazione][activeQuestion] + marginPost2[3].y*indexW;
+			answerGUI.drawString(answerStringC[i][activePostazione][activeQuestion],
+                                 int(drawPos.x),
+                                 int(drawPos.y));
 		}
 		ofPopStyle();
 
@@ -362,16 +368,33 @@ void ofApp::saveImage() {
 	// Delete existing images in relevant folders
 	for (int i = 0; i < 2; i++) {
 		string delFilesPath;
-		delFilesPath = "_OUTPUT_/media/imagenFija/";
+        if(isWindows){
+            delFilesPath = "_OUTPUT_\\media\\imagenFija\\";
+        } else {
+            delFilesPath = "_OUTPUT_/media/imagenFija/";
+        }
+		
 		if (i == 0) {
-			delFilesPath += "preguntas/";
+            if(isWindows){
+                delFilesPath += "preguntas\\";
+            } else {
+                delFilesPath += "preguntas/";
+            }
 		}
 		else if (i == 1) {
-			delFilesPath += "respuestas/";
+            if(isWindows){
+                delFilesPath += "respuestas\\";
+            } else {
+                delFilesPath += "respuestas/";
+            }
 		}
 		for (int j = 0; j < 3; j++) {
 			string posta;
-			posta = "postazione_" + ofToString(j + 1) + "/";
+            if(isWindows){
+                posta = "postazione_" + ofToString(j + 1) + "\\";
+            } else {
+                posta = "postazione_" + ofToString(j + 1) + "/";
+            }
 			if (i == 0) {
 				ofDirectory dir;
 				while (dir.listDir(delFilesPath + posta) > 0) {
@@ -383,7 +406,11 @@ void ofApp::saveImage() {
 			else if (i == 1) {
 				for (int k = 0; k < 5; k++) {
 					string suffix;
-					suffix = "question_" + ofToString(k + 1) + "/";
+                    if(isWindows){
+                        suffix = "question_" + ofToString(k + 1) + "\\";
+                    } else {
+                        suffix = "question_" + ofToString(k + 1) + "/";
+                                            }
 					ofDirectory dir;
 					while (dir.listDir(delFilesPath + posta + suffix) > 0) {
 						ofFile file;
@@ -417,28 +444,29 @@ void ofApp::saveImage() {
 			for (int i = 0; i < 4; i++) {
 				ofFbo compose;
 				ofPixels pixels;
-
 				if (j == 0 || j == 2) {
-					compose.allocate(500, 768, GL_RGBA);
-					pixels.allocate(500, 768, OF_IMAGE_COLOR_ALPHA);
+					compose.allocate(500*saveResRatio, 768*saveResRatio, GL_RGBA, 64);
+                    compose.begin();
+                    ofClear(255, 0);
+                    compose.end();
+					pixels.allocate(500*saveResRatio, 768*saveResRatio, OF_IMAGE_COLOR_ALPHA);
 				}
 				else if (j == 1) {
-					compose.allocate(620, 768, GL_RGBA);
-					pixels.allocate(620, 768, OF_IMAGE_COLOR_ALPHA);
+					compose.allocate(620*saveResRatio, 768*saveResRatio, GL_RGBA, 64);
+					pixels.allocate(620*saveResRatio, 768*saveResRatio, OF_IMAGE_COLOR_ALPHA);
 				}
 
 				pixels.clear();
 
 				compose.begin();
-				ofClear(0, 0, 0, 0);
+				ofClear(255, 0);
 				ofSetColor(255, 255, 255, 255);
-
 				// BACKGROUND
 				if (j == 0 || j == 2) {
-					sandwich_13.draw(0, 0);
+					sandwich_13.draw(0, 0, sandwich_13.getWidth()*saveResRatio, sandwich_13.getHeight()*saveResRatio);
 				}
 				else if (j == 1) {
-					sandwich_2.draw(0, 0);
+					sandwich_2.draw(0, 0, sandwich_2.getWidth()*saveResRatio, sandwich_2.getHeight()*saveResRatio);
 				}
 
 				// QUESTION
@@ -446,48 +474,61 @@ void ofApp::saveImage() {
 				ofSetColor(228, 52, 45, 255);
 				ofPoint drawPos;
 				float totalHeight = 0;
-				for (int i = 0; i < nStringActiveLines[j][k]; i++) {
-					totalHeight += question.stringHeight(questionString[i][j][k])*1.4;
+				for (int line = 0; line < nStringActiveLines[j][k]; line++) {
+					totalHeight += question.stringHeight(questionString[line][j][k])*1.4;
 				}
-				for (int i = 0; i < nStringActiveLines[j][k]; i++) {
-					drawPos.x = marginW + squarePos.x + squareW / 2 - question.stringWidth(questionString[i][j][k]) / 2 + marginPost2[0].x + correctSaveP2[0].x;
-					drawPos.y = marginH + squarePos.y + squareH / 2 - totalHeight / 3 + i*totalHeight / nStringActiveLines[j][k] + marginPost2[0].y + 20 + correctSaveP2[0].y;
-					question.drawString(questionString[i][j][k], drawPos.x, drawPos.y);
+				for (int line = 0; line < nStringActiveLines[j][k]; line++) {
+                    float fixX = (marginW + squarePos.x + squareW / 2 + marginPost2[0].x + correctSaveP2[0].x) * saveResRatio;
+                    float fixY = (marginH + squarePos.y + squareH / 2 + marginPost2[0].y + 20 + correctSaveP2[0].y) * saveResRatio;
+					drawPos.x = fixX - question.stringWidth(questionString[line][j][k])/2;
+					drawPos.y = fixY - totalHeight/3 + line*totalHeight/nStringActiveLines[j][k];
+					question.drawString(questionString[line][j][k],
+                                        int(drawPos.x),
+                                        int(drawPos.y));
 				}
 				ofPopStyle();
 
 				// ANSWERS
 				ofPushStyle();
-				ofSetColor(0, 0, 0, 255);
+				ofSetColor(255, 255, 255, 255);
 				// ANSWER - A
 				totalHeight = 0;
-				for (int i = 0; i < ansA_nStringActiveLines[j][k]; i++) {
-					totalHeight += answer.stringHeight(answerStringA[i][j][k])*1.4;
+				for (int line = 0; line < ansA_nStringActiveLines[j][k]; line++) {
+					totalHeight += answer.stringHeight(answerStringA[line][j][k])*1.4;
 				}
-				drawPos.x = marginW + marginW_a + marginPost2[1].x + 20 + correctSaveP2[1].x;
-				for (int i = 0; i < ansA_nStringActiveLines[j][k]; i++) {
-					drawPos.y = marginH + marginH_a + 10 - totalHeight / 3 + i*totalHeight / ansA_nStringActiveLines[j][k] + marginPost2[1].y + 20 + correctSaveP2[1].y + 5;
-					answer.drawString(answerStringA[i][j][k], drawPos.x, drawPos.y);
+				drawPos.x = (marginW + marginW_a + marginPost2[1].x + 20 + correctSaveP2[1].x) * saveResRatio;
+				for (int line = 0; line < ansA_nStringActiveLines[j][k]; line++) {
+                    float fixY = (marginH + marginH_a + 10 + marginPost2[1].y + 20 + correctSaveP2[1].y + 5) * saveResRatio;
+					drawPos.y = fixY - totalHeight/3 + line*totalHeight/ansA_nStringActiveLines[j][k];
+					answer.drawString(answerStringA[line][j][k],
+                                      int(drawPos.x),
+                                      int(drawPos.y));
 				}
 				// ANSWER - B
 				totalHeight = 0;
-				for (int i = 0; i < ansB_nStringActiveLines[j][k]; i++) {
-					totalHeight += answer.stringHeight(answerStringB[i][j][k])*1.4;
+				for (int line = 0; line < ansB_nStringActiveLines[j][k]; line++) {
+					totalHeight += answer.stringHeight(answerStringB[line][j][k])*1.4;
 				}
-				drawPos.x = marginW + marginW_b + marginPost2[2].x + 20 + correctSaveP2[2].x;
-				for (int i = 0; i < ansB_nStringActiveLines[j][k]; i++) {
-					drawPos.y = marginH + marginH_b + 10 - totalHeight / 3 + i*totalHeight / ansB_nStringActiveLines[j][k] + marginPost2[2].y + 20 + correctSaveP2[2].y + 5;
-					answer.drawString(answerStringB[i][j][k], drawPos.x, drawPos.y);
+				drawPos.x = (marginW + marginW_b + marginPost2[2].x + 20 + correctSaveP2[2].x) * saveResRatio;
+				for (int line = 0; line < ansB_nStringActiveLines[j][k]; line++) {
+                    float fixY = (marginH + marginH_b + 10 + marginPost2[2].y + 20 + correctSaveP2[2].y + 5) * saveResRatio;
+					drawPos.y = fixY - totalHeight/3 + line*totalHeight/ansB_nStringActiveLines[j][k];
+					answer.drawString(answerStringB[line][j][k],
+                                      int(drawPos.x),
+                                      int(drawPos.y));
 				}
 				// ANSWER - C
 				totalHeight = 0;
-				for (int i = 0; i < ansC_nStringActiveLines[j][k]; i++) {
-					totalHeight += answer.stringHeight(answerStringC[i][j][k])*1.4;
+				for (int line = 0; line < ansC_nStringActiveLines[j][k]; line++) {
+					totalHeight += answer.stringHeight(answerStringC[line][j][k])*1.4;
 				}
-				drawPos.x = marginW + marginW_c + marginPost2[3].x + 20 + correctSaveP2[3].x;
-				for (int i = 0; i < ansC_nStringActiveLines[j][k]; i++) {
-					drawPos.y = marginH + marginH_c + 10 - totalHeight / 3 + i*totalHeight / ansC_nStringActiveLines[j][k] + marginPost2[3].y + 20 + correctSaveP2[3].y + 5;
-					answer.drawString(answerStringC[i][j][k], drawPos.x, drawPos.y);
+				drawPos.x = (marginW + marginW_c + marginPost2[3].x + 20 + correctSaveP2[3].x) * saveResRatio;
+				for (int line = 0; line < ansC_nStringActiveLines[j][k]; line++) {
+                    float fixY = (marginH + marginH_c + 10 + marginPost2[3].y + 20 + correctSaveP2[3].y + 5) * saveResRatio;
+					drawPos.y = fixY - totalHeight/3 + line*totalHeight/ansC_nStringActiveLines[j][k] ;
+					answer.drawString(answerStringC[line][j][k],
+                                      int(drawPos.x),
+                                      int(drawPos.y));
 				}
 
 				ofPoint correctFinal;
@@ -506,39 +547,45 @@ void ofApp::saveImage() {
 					if (i == nRight[j][k] + 1) {
 						ofSetColor(255, 255, 255, 255);
 						if (j == 1) {
-							right.draw(rightPos[i - 1].x + correctPost2[1][i - 1].x + correctFinal.x,
-								rightPos[i - 1].y + correctPost2[1][i - 1].y + 20 - 11 + correctFinal.y,
-								rwIconSize, rwIconSize);
+							right.draw((rightPos[i - 1].x + correctPost2[1][i - 1].x + correctFinal.x) * saveResRatio,
+                                       (rightPos[i - 1].y + correctPost2[1][i - 1].y + 20 - 11 + correctFinal.y) * saveResRatio,
+                                       rwIconSize * saveResRatio,
+                                       rwIconSize * saveResRatio);
 						}
 						else {
-							right.draw(rightPos[i - 1].x + correctFinal.x,
-								rightPos[i - 1].y + 20 + correctFinal.y,
-								rwIconSize, rwIconSize);
+							right.draw((rightPos[i - 1].x + correctFinal.x) * saveResRatio,
+                                       (rightPos[i - 1].y + 20 + correctFinal.y) * saveResRatio,
+                                       rwIconSize * saveResRatio,
+                                       rwIconSize * saveResRatio);
 						}
 					}
 					else {
 						ofSetColor(255, 255, 255, 255);
 						if (j == 1) {
-							wrong.draw(rightPos[i - 1].x + correctPost2[1][i - 1].x + correctFinal.x,
-								rightPos[i - 1].y + correctPost2[1][i - 1].y + 20 - 11 + correctFinal.y,
-								rwIconSize, rwIconSize);
+							wrong.draw((rightPos[i - 1].x + correctPost2[1][i - 1].x + correctFinal.x) * saveResRatio,
+                                       (rightPos[i - 1].y + correctPost2[1][i - 1].y + 20 - 11 + correctFinal.y) * saveResRatio,
+                                       rwIconSize * saveResRatio,
+                                       rwIconSize * saveResRatio);
 						}
 						else {
-							wrong.draw(rightPos[i - 1].x + correctFinal.x,
-								rightPos[i - 1].y + 20 + correctFinal.y,
-								rwIconSize, rwIconSize);
+							wrong.draw((rightPos[i - 1].x + correctFinal.x) * saveResRatio,
+                                       (rightPos[i - 1].y + 20 + correctFinal.y) * saveResRatio,
+                                       rwIconSize * saveResRatio,
+                                       rwIconSize * saveResRatio);
 						}
 					}
 					ofSetColor(255, 255, 255, 255);
 					if (j == 1) {
-						selected.draw(selectedPos[i - 1].x + correctPost2[0][i - 1].x + correctIconP2 + 9 + correctFinal.x,
-							selectedPos[i - 1].y + correctPost2[0][i - 1].y + 20 - 11 + correctFinal.y,
-							selectedIconSize, selectedIconSize);
+						selected.draw((selectedPos[i - 1].x + correctPost2[0][i - 1].x + correctIconP2 + 9 + correctFinal.x) * saveResRatio,
+                                      (selectedPos[i - 1].y + correctPost2[0][i - 1].y + 20 - 11 + correctFinal.y) * saveResRatio,
+                                      selectedIconSize * saveResRatio,
+                                      selectedIconSize * saveResRatio);
 					}
 					else {
-						selected.draw(selectedPos[i - 1].x + correctFinal.x,
-							selectedPos[i - 1].y + 20 + correctFinal.y,
-							selectedIconSize, selectedIconSize);
+						selected.draw((selectedPos[i - 1].x + correctFinal.x) * saveResRatio,
+                                      (selectedPos[i - 1].y + 20 + correctFinal.y) * saveResRatio,
+                                      selectedIconSize * saveResRatio,
+                                      selectedIconSize * saveResRatio);
 					}
 				}
 				ofPopStyle();
@@ -547,14 +594,30 @@ void ofApp::saveImage() {
 				compose.readToPixels(pixels);
 
 				string path;
-				path = "_OUTPUT_/media/imagenFija/";
+                if(isWindows){
+                    path = "_OUTPUT_\\media\\imagenFija\\";
+                } else {
+                    path = "_OUTPUT_/media/imagenFija/";
+                }
 				if (i == 0) {
-					path += "preguntas/";
+                    if(isWindows){
+                        path += "preguntas\\";
+                    } else {
+                        path += "preguntas/";
+                    }
 				}
-				else {
-					path += "respuestas/";
+                else {
+                    if(isWindows){
+                        path += "respuestas\\";
+                    } else {
+                        path += "respuestas/";
+                    }
 				}
-				path += "postazione_" + ofToString(j + 1) + "/";
+                if(isWindows){
+                    path += "postazione_" + ofToString(j + 1) + "\\";
+                } else {
+                    path += "postazione_" + ofToString(j + 1) + "/";
+                }
 				if (i == 0) {
 					path += "Q" + ofToString(k + 1) + "_0.png";
 				}
@@ -576,10 +639,15 @@ void ofApp::saveImage() {
 					else {
 						yesOrNo = "_NO";
 					}
-					if (answerStringC[0][j][k].length() == 0) {
+					if (answerStringC[0][j][k].length() == 0 
+						&& i==3) {
 						yesOrNo = "";
 					}
-					path += "question_" + ofToString(k + 1) + "/";
+                    if(isWindows){
+                        path += "question_" + ofToString(k + 1) + "\\";
+                    } else {
+                        path += "question_" + ofToString(k + 1) + "/";
+                    }
 					path += "Q" + ofToString(k + 1) + "_" + letter + yesOrNo + ".png";
 				}
 				ofSaveImage(pixels, path, OF_IMAGE_QUALITY_BEST);
@@ -626,6 +694,7 @@ void ofApp::inputQuestionCircles(int x, int y) {
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 5; j++) {
 			if (ofDist(circlePos[i][j].x*indexW, circlePos[i][j].y*indexW, x, y) < 15 * indexW) {
+				nFill = 0;
 				activeQuestion = j;
 				activePostazione = i;
 				break;
@@ -871,7 +940,9 @@ void ofApp::keyPressed(int key) {
 						nStringActiveLines[activePostazione][activeQuestion]++;
 					}
 				}
-				else if (key == 2304 || key == 2305 || key == 2306) {
+				else if (key == 2304 || key == 2305 || key == 2306 || key == 186 || key == 768 || key == 769 ||
+					key == 180 || key == 231 || key == 1280 || key == 1281 || key == 1282 || key == 4352 || 
+					key == 4353 || key == 356 || key == 357 || key == 358 || key == 359) {
 
 				}
 				else {
@@ -898,7 +969,9 @@ void ofApp::keyPressed(int key) {
 						ansA_nStringActiveLines[activePostazione][activeQuestion]++;
 					}
 				}
-				else if (key == 2304 || key == 2305 || key == 2306) {
+				else if (key == 2304 || key == 2305 || key == 2306 || key == 186 || key == 768 || key == 769 ||
+					key == 180 || key == 231 || key == 1280 || key == 1281 || key == 1282 || key == 4352 ||
+					key == 4353 || key == 356 || key == 357 || key == 358 || key == 359) {
 
 				}
 				else {
@@ -925,7 +998,9 @@ void ofApp::keyPressed(int key) {
 						ansB_nStringActiveLines[activePostazione][activeQuestion]++;
 					}
 				}
-				else if (key == 2304 || key == 2305 || key == 2306) {
+				else if (key == 2304 || key == 2305 || key == 2306 || key == 186 || key == 768 || key == 769 ||
+					key == 180 || key == 231 || key == 1280 || key == 1281 || key == 1282 || key == 4352 ||
+					key == 4353 || key == 356 || key == 357 || key == 358 || key == 359) {
 
 				}
 				else {
@@ -952,7 +1027,9 @@ void ofApp::keyPressed(int key) {
 						ansC_nStringActiveLines[activePostazione][activeQuestion]++;
 					}
 				}
-				else if (key == 2304 || key == 2305 || key == 2306) {
+				else if (key == 2304 || key == 2305 || key == 2306 || key == 186 || key == 768 || key == 769 ||
+					key == 180 || key == 231 || key == 1280 || key == 1281 || key == 1282 || key == 4352 ||
+					key == 4353 || key == 356 || key == 357 || key == 358 || key == 359) {
 
 				}
 				else {
@@ -975,7 +1052,7 @@ void ofApp::saveXml() {
 	// Game Settings
 	gameSettings.addChild("gameSettings");
 	gameSettings.setTo("gameSettings");
-	gameSettings.addValue("guiActive", "YES");
+	gameSettings.addValue("guiActive", "NO");
 	gameSettings.addValue("showRemainingTime", "NO");
 	gameSettings.addValue("sequenceFPS", "18");
 	gameSettings.addValue("maxAnswerTime", "15");

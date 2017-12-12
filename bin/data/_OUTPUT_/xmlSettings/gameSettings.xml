@@ -1,5 +1,5 @@
 <gameSettings>
-	<guiActive>YES</guiActive>
+	<guiActive>NO</guiActive>
 	<showRemainingTime>NO</showRemainingTime>
 	<sequenceFPS>18</sequenceFPS>
 	<maxAnswerTime>15</maxAnswerTime>
@@ -10,7 +10,7 @@
 	<postazione1>
 		<question1>
 			<correctAnswer>A</correctAnswer>
-			<numPossibleAnswers>2</numPossibleAnswers>
+			<numPossibleAnswers>3</numPossibleAnswers>
 		</question1>
 		<question2>
 			<correctAnswer>A</correctAnswer>
